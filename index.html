@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Photon Estudios — Artist Consulting</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cream: #f5f0e8;
+      --warm: #e8d5b7;
+      --amber: #c4933f;
+      --dark: #2c2416;
+      --muted: #7a6a52;
+      --red: #c0392b;
+    }
+
+    body {
+      background: var(--cream);
+      color: var(--dark);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+    }
+
+    /* ── PASSWORD SCREEN ── */
+    #gate {
+      position: fixed;
+      inset: 0;
+      background: var(--dark);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2rem;
+      z-index: 100;
+      transition: opacity 0.8s ease;
+    }
+
+    #gate.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .gate-logo {
+      font-family: 'Playfair Display', serif;
+      color: var(--warm);
+      font-size: 1.8rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+
+    .gate-logo span {
+      color: var(--amber);
+    }
+
+    .gate-subtitle {
+      color: var(--muted);
+      font-size: 0.8rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+    }
+
+    .gate-form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .gate-input {
+      background: transparent;
+      border: 1px solid var(--muted);
+      color: var(--warm);
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      letter-spacing: 0.2em;
+      text-align: center;
+      outline: none;
+      width: 220px;
+      transition: border-color 0.3s;
+    }
+
+    .gate-input:focus { border-color: var(--amber); }
+    .gate-input::placeholder { color: #4a3f30; letter-spacing: 0.1em; }
+
+    .gate-btn {
+      background: var(--amber);
+      color: var(--dark);
+      border: none;
+      padding: 0.75rem 2.5rem;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.75rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .gate-btn:hover { background: #d4a350; }
+
+    .gate-error {
+      color: var(--red);
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .gate-error.visible { opacity: 1; }
+
+    /* ── MAIN SITE ── */
+    #site {
+      opacity: 0;
+      transition: opacity 1s ease 0.3s;
+    }
+
+    #site.visible { opacity: 1; }
+
+    /* NAV */
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 2rem 4rem;
+      border-bottom: 1px solid var(--warm);
+    }
+
+    .nav-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem;
+      letter-spacing: 0.12em;
+      color: var(--dark);
+    }
+
+    .nav-logo span { color: var(--amber); }
+
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--muted);
+      font-size: 0.75rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      transition: color 0.3s;
+    }
+
+    .nav-links a:hover { color: var(--amber); }
+
+    /* HERO */
+    .hero {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 85vh;
+      align-items: center;
+    }
+
+    .hero-text {
+      padding: 6rem 4rem 6rem 6rem;
+    }
+
+    .hero-eyebrow {
+      font-size: 0.7rem;
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      color: var(--amber);
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.5rem, 4vw, 4rem);
+      line-height: 1.15;
+      color: var(--dark);
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-title em {
+      font-style: italic;
+      color: var(--amber);
+    }
+
+    .hero-body {
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.8;
+      max-width: 420px;
+      margin-bottom: 2.5rem;
+    }
+
+    .hero-cta {
+      display: inline-block;
+      background: var(--dark);
+      color: var(--cream);
+      padding: 1rem 2.5rem;
+      text-decoration: none;
+      font-size: 0.75rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      transition: background 0.3s;
+    }
+
+    .hero-cta:hover { background: var(--amber); color: var(--dark); }
+
+    .hero-visual {
+      background: var(--warm);
+      height: 100%;
+      min-height: 85vh;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .hero-visual::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 30% 60%, rgba(196,147,63,0.25) 0%, transparent 70%),
+                  radial-gradient(ellipse at 70% 20%, rgba(44,36,22,0.15) 0%, transparent 60%);
+    }
+
+    .hero-visual-text {
+      font-family: 'Playfair Display', serif;
+      font-size: 8rem;
+      color: rgba(44,36,22,0.08);
+      font-style: italic;
+      user-select: none;
+      line-height: 1;
+      text-align: center;
+    }
+
+    /* SERVICES */
+    .services {
+      padding: 6rem 6rem;
+      background: var(--dark);
+      color: var(--cream);
+    }
+
+    .section-eyebrow {
+      font-size: 0.7rem;
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      color: var(--amber);
+      margin-bottom: 1rem;
+    }
+
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.2rem;
+      margin-bottom: 3.5rem;
+      color: var(--warm);
+    }
+
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 3rem;
+    }
+
+    .service-card {
+      border-top: 1px solid var(--muted);
+      padding-top: 2rem;
+    }
+
+    .service-number {
+      font-size: 0.7rem;
+      color: var(--amber);
+      letter-spacing: 0.2em;
+      margin-bottom: 1rem;
+    }
+
+    .service-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem;
+      color: var(--warm);
+      margin-bottom: 0.75rem;
+    }
+
+    .service-body {
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.7;
+    }
+
+    /* ABOUT */
+    .about {
+      padding: 7rem 6rem;
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 6rem;
+      align-items: center;
+    }
+
+    .about-visual {
+      background: var(--warm);
+      aspect-ratio: 3/4;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .about-visual::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(196,147,63,0.2) 0%, transparent 60%);
+    }
+
+    .about-label {
+      font-family: 'Playfair Display', serif;
+      font-size: 5rem;
+      color: rgba(196,147,63,0.15);
+      position: absolute;
+      bottom: 2rem;
+      right: 2rem;
+      font-style: italic;
+      line-height: 1;
+    }
+
+    .about-eyebrow {
+      font-size: 0.7rem;
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      color: var(--amber);
+      margin-bottom: 1rem;
+    }
+
+    .about-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.2rem;
+      line-height: 1.2;
+      margin-bottom: 1.5rem;
+    }
+
+    .about-body {
+      color: var(--muted);
+      line-height: 1.8;
+      margin-bottom: 1rem;
+      font-size: 0.95rem;
+    }
+
+    .about-langs {
+      display: flex;
+      gap: 1rem;
+      margin-top: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .lang-tag {
+      background: var(--warm);
+      color: var(--dark);
+      padding: 0.3rem 1rem;
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+
+    /* COLLAB */
+    .collab {
+      background: var(--warm);
+      padding: 4rem 6rem;
+      display: flex;
+      align-items: center;
+      gap: 3rem;
+    }
+
+    .collab-text {
+      flex: 1;
+    }
+
+    .collab-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .collab-body {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .collab-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      border: 1px solid var(--muted);
+      padding: 0.75rem 1.5rem;
+      white-space: nowrap;
+    }
+
+    /* CONTACT */
+    .contact {
+      padding: 6rem;
+      text-align: center;
+      background: var(--cream);
+    }
+
+    .contact-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .contact-body {
+      color: var(--muted);
+      margin-bottom: 2.5rem;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+      line-height: 1.8;
+    }
+
+    .contact-email {
+      display: inline-block;
+      color: var(--amber);
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem;
+      font-style: italic;
+      text-decoration: none;
+      border-bottom: 1px solid var(--amber);
+      padding-bottom: 0.2rem;
+    }
+
+    /* FOOTER */
+    footer {
+      padding: 2rem 4rem;
+      border-top: 1px solid var(--warm);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: var(--muted);
+      font-size: 0.75rem;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 900px) {
+      nav { padding: 1.5rem 2rem; }
+      .nav-links { display: none; }
+      .hero { grid-template-columns: 1fr; }
+      .hero-text { padding: 4rem 2rem; }
+      .hero-visual { min-height: 40vh; }
+      .services { padding: 4rem 2rem; }
+      .services-grid { grid-template-columns: 1fr; gap: 2rem; }
+      .about { grid-template-columns: 1fr; padding: 4rem 2rem; gap: 3rem; }
+      .collab { padding: 3rem 2rem; flex-direction: column; }
+      .contact { padding: 4rem 2rem; }
+      footer { padding: 2rem; flex-direction: column; gap: 1rem; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- PASSWORD GATE -->
+<div id="gate">
+  <div class="gate-logo">Photon<span>·</span>Estudios</div>
+  <div class="gate-subtitle">Artist Consulting</div>
+  <div class="gate-form">
+    <input id="pw" class="gate-input" type="password" placeholder="Enter password" autocomplete="off">
+    <button class="gate-btn" onclick="checkPw()">Enter</button>
+    <div id="gate-error" class="gate-error">Incorrect password</div>
+  </div>
+</div>
+
+<!-- MAIN SITE -->
+<div id="site">
+
+  <nav>
+    <div class="nav-logo">Photon<span>·</span>Estudios</div>
+    <ul class="nav-links">
+      <li><a href="#services">Services</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-text">
+      <div class="hero-eyebrow">Artist Consulting · Granada, Andalucía</div>
+      <h1 class="hero-title">
+        Shape your<br><em>artistic identity</em><br>with intention.
+      </h1>
+      <p class="hero-body">
+        Strategic image consulting and artistic direction for musicians, performers, and creative professionals.
+        Rooted in Granada, working internationally.
+      </p>
+      <a href="#contact" class="hero-cta">Start the conversation</a>
+    </div>
+    <div class="hero-visual">
+      <div class="hero-visual-text">Photon</div>
+    </div>
+  </section>
+
+  <section class="services" id="services">
+    <div class="section-eyebrow">What we do</div>
+    <div class="section-title">Services</div>
+    <div class="services-grid">
+      <div class="service-card">
+        <div class="service-number">01</div>
+        <div class="service-title">Artist Image &amp; Identity</div>
+        <p class="service-body">Visual identity, brand positioning, and image strategy tailored to your artistic voice and audience.</p>
+      </div>
+      <div class="service-card">
+        <div class="service-number">02</div>
+        <div class="service-title">Photo Direction</div>
+        <p class="service-body">Creative direction for photoshoots — concept, styling, and post-production guidance that tells your story.</p>
+      </div>
+      <div class="service-card">
+        <div class="service-number">03</div>
+        <div class="service-title">Career Consulting</div>
+        <p class="service-body">Strategic advice for artists navigating the international market — from positioning to press to partnerships.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="about" id="about">
+    <div class="about-visual">
+      <div class="about-label">D.H.</div>
+    </div>
+    <div>
+      <div class="about-eyebrow">About</div>
+      <h2 class="about-title">Daniela Haering</h2>
+      <p class="about-body">
+        Based in Granada, Andalucía — working with artists across Europe and beyond.
+        With experience across Ireland, Switzerland, and Scotland, Daniela brings an
+        international perspective to every creative collaboration.
+      </p>
+      <p class="about-body">
+        Partnering with <a href="https://www.lamusicaestudios.com" style="color:var(--amber)">LaMusicaEsTuDios</a>
+        to connect artistic vision with the infrastructure that brings it to life.
+      </p>
+      <div class="about-langs">
+        <span class="lang-tag">Deutsch</span>
+        <span class="lang-tag">English</span>
+        <span class="lang-tag">Español</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="collab">
+    <div class="collab-text">
+      <div class="collab-title">In collaboration with LaMusicaEsTuDios</div>
+      <p class="collab-body">Studio space, production, and artist development — together we cover the full creative journey.</p>
+    </div>
+    <div class="collab-logo">LaMusicaEsTuDios</div>
+  </div>
+
+  <section class="contact" id="contact">
+    <div class="section-eyebrow">Get in touch</div>
+    <h2 class="contact-title">Let's work together.</h2>
+    <p class="contact-body">
+      Whether you're launching your career, rebranding, or preparing for a major project —
+      reach out and let's talk.
+    </p>
+    <a href="mailto:daniela.haering@it-rockstars.com" class="contact-email">daniela.haering@it-rockstars.com</a>
+  </section>
+
+  <footer>
+    <div>© 2026 PhotonEsTuDios · Granada, Andalucía</div>
+    <div>Artist Consulting · DE · EN · ES</div>
+  </footer>
+
+</div>
+
+<script>
+  const pw = document.getElementById('pw');
+  pw.addEventListener('keydown', e => { if (e.key === 'Enter') checkPw(); });
+
+  function checkPw() {
+    if (pw.value.toLowerCase() === 'dani') {
+      document.getElementById('gate').classList.add('hidden');
+      document.getElementById('site').classList.add('visible');
+    } else {
+      document.getElementById('gate-error').classList.add('visible');
+      pw.value = '';
+      pw.focus();
+    }
+  }
+</script>
+
+</body>
+</html>
