@@ -39,11 +39,7 @@ index.html      ← die gesamte Website (eine Datei, kein Framework)
 ## Deploy (nach Änderungen)
 
 ```bash
-aws s3 cp index.html s3://photonestudios-website/ --profile photon
-aws cloudfront create-invalidation \
-  --distribution-id E2AV0UKK8M6336 \
-  --paths "/*" \
-  --profile photon
+bash deploy.sh
 ```
 
 ## Architektur
