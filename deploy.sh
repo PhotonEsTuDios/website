@@ -1,8 +1,8 @@
 #!/bin/bash
 set -e
 
-BUCKET="photonestudios-website"
-CF_ID="E2AV0UKK8M6336"
+BUCKET="${WEBSITE_BUCKET:-photonestudios-website}"
+CF_ID="${WEBSITE_DISTRIBUTION_ID:-E2AV0UKK8M6336}"
 PROFILE="${AWS_PROFILE:-photon}"
 
 echo "Deploying to s3://$BUCKET..."
